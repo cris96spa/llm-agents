@@ -1,0 +1,128 @@
+[project]
+name = "project_template"
+version = "0.0.0"
+authors = [{ name = "Cristian" }]
+description = "Project Template"
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "setuptools",
+    "llmx>=0.0.21a",
+    "pydantic",
+    "uvicorn", 
+    "typer",
+    "fastapi", 
+    "python-multipart", 
+    "scipy",
+    "types-PyYAML",
+    "scikit-learn",
+    "numpy",
+    "pandas",
+    "polars",
+    "matplotlib",
+    "altair", 
+    "seaborn",
+    "plotly", 
+    "plotnine",
+    "statsmodels", 
+    "matplotlib-venn",
+    "openpyxl",
+    "pyarrow",
+    "pyvis",
+    "python-dotenv",
+    "langchain",
+    "langchain-community",
+    "langchain-experimental",
+    "langchain_google_community",
+    "langchain-openai",
+    "langgraph",
+    "langfuse",
+]
+
+# list of project dev dependencies
+[project.optional-dependencies]
+
+torch = [
+    "torch==2.4.0+cu124 ; platform_system == 'Windows'",
+    "torch==2.4.0 ; platform_system != 'Windows'",
+    "torchvision==0.19.0+cu124 ; platform_system == 'Windows'",
+    "torchvision==0.19.0 ; platform_system != 'Windows'",
+]
+
+image = [
+    "torch==2.4.0+cu124 ; platform_system == 'Windows'",
+    "torch==2.4.0 ; platform_system != 'Windows'",
+    "torchvision==0.19.0+cu124 ; platform_system == 'Windows'",
+    "torchvision==0.19.0 ; platform_system != 'Windows'",
+]
+
+text = [
+    "torch==2.4.0+cu124 ; platform_system == 'Windows'",
+    "torch==2.4.0 ; platform_system != 'Windows'",
+    "transformers[torch]",
+    "sentence-transformers",
+    "langchain",
+    "langchain-text-splitters",
+]
+
+security = [
+    "tiktoken==0.7.0",
+    "openai==1.51.2",
+    "litellm==1.42.1",
+    "langchain_openai==0.1.17",
+    "langchain_google_genai==1.0.8",
+    "google-generativeai==0.7.2",
+    "anthropic==0.31.2",
+    "langchain_anthropic==0.1.20",
+    "langchain_huggingface==0.0.3",
+]
+
+[dependency-groups]
+
+# Dependencies used to build package
+build = ["twine", "build"]
+
+dev = [
+    "mypy",
+    "jupyter",
+    "ipykernel",
+    "pytest",
+    "pytest-cov",
+    "pytest-mock",
+    "pytest-asyncio",
+    "pytest-xdist[psutil]",
+    "ruff",
+    "types-requests",
+]
+
+### INDEXES
+
+[tool.uv.sources]
+torch = { index = "pytorch-gpu", marker = "platform_system == 'Windows'" }
+torchvision = { index = "pytorch-gpu", marker = "platform_system == 'Windows'" }
+
+[[tool.uv.index]]
+name = "pytorch-gpu"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[[tool.uv.index]]
+name = "default_pypy"
+url = "https://pypi.org/simple/"
+default = true
+
+### BUILD
+
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+exclude = ["notebooks"]

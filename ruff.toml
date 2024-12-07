@@ -1,0 +1,92 @@
+line-length = 79
+indent-width = 4
+target-version = "py312"
+exclude = ["tests/"]
+
+[lint]
+fixable = ["ALL"]
+select = [
+    "F",
+    "W",
+    "E",
+    "I",
+    #"N" # names,
+    #"D", # docstrings
+    "UP",
+    #"ANN", # annotations
+    "ASYNC",
+    #"S",  # security
+    #"BLE" # blind exception
+    #"FBT", # boolean trap
+    "B",
+    "A",
+    "COM",
+    # "CPY", # copyright
+    #"C4", # comprehension
+    #"DTZ", # datetime
+    "T10",
+    #"DJ", # django
+    #"EM", # error message
+    #"EXE", # executable
+    #"FA", # future annotations
+    "ISC",
+    "ICN",
+    "G",
+    "INP",
+    "PIE",
+    "T20",
+    "PYI",
+    "PT",
+    "Q",
+    "RSE",
+    #"RET", # return
+    "SLF",
+    "SLOT",
+    #"SIM", # simplify
+    "TID",
+    "TCH",
+    "INT",
+    "ARG",
+    #"PTH", # pathlib
+    #"TD, # todos
+    #"FIX", # fixmes
+    "ERA",
+    #"PD", # pandas
+    #"PGH", # pygrep hooks
+    "PL",
+    #"TRY", # excception handling,
+    #"FLY", # f-strings
+    "NPY",
+    #"AIR", # airflow
+    #"PERF", # performance
+    #"FURB", # refurb
+    "LOG",
+    #"RUF", # ruff specific
+]
+ignore = [
+    "B008",
+    "PLR0913",
+    "PLR0912",
+    "PLR2004",
+    "EM102",
+    "E501",
+    "G004",
+    "RSE102",
+    "COM812",
+    "ISC001",
+    "Q000",
+    "Q003",
+    "PLR0915",
+    "PLR0911",
+]
+
+[format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+docstring-code-line-length = "dynamic"
+
+[lint.flake8-quotes]
+inline-quotes = "single"
