@@ -1,5 +1,5 @@
 [project]
-name = "project_template"
+name = "llm_agents"
 version = "0.0.0"
 authors = [{ name = "Cristian" }]
 description = "Project Template"
@@ -13,75 +13,47 @@ classifiers = [
 ]
 
 dependencies = [
-    "setuptools",
+    "setuptools>=75.6.0",
     "llmx>=0.0.21a",
-    "pydantic",
-    "uvicorn", 
-    "typer",
-    "fastapi", 
-    "python-multipart", 
-    "scipy",
-    "types-PyYAML",
-    "scikit-learn",
-    "numpy",
-    "pandas",
-    "polars",
-    "matplotlib",
+    "pydantic>=2.10.3",
+    "uvicorn>=0.32.1", 
+    "typer>=0.15.1",
+    "fastapi>=0.115.6", 
+    "python-multipart>=0.0.19", 
+    "scipy>=1.13.1",
+    "types-PyYAML>=6.0.12.20240917",
+    "numpy>=2.0.2",
+    "pandas>=2.2.3",
+    "polars>=1.16.0",
+    "matplotlib>=3.9.3",
     "altair", 
     "seaborn",
     "plotly", 
     "plotnine",
     "statsmodels", 
+    "geopandas",
     "matplotlib-venn",
+    "wordcloud",
     "openpyxl",
+    "ydata-profiling",
     "pyarrow",
+    "networkx",
     "pyvis",
-    "python-dotenv",
-    "langchain",
-    "langchain-community",
-    "langchain-experimental",
-    "langchain_google_community",
-    "langchain-openai",
-    "langgraph",
-    "langfuse",
-]
-
-# list of project dev dependencies
-[project.optional-dependencies]
-
-torch = [
-    "torch==2.4.0+cu124 ; platform_system == 'Windows'",
-    "torch==2.4.0 ; platform_system != 'Windows'",
-    "torchvision==0.19.0+cu124 ; platform_system == 'Windows'",
-    "torchvision==0.19.0 ; platform_system != 'Windows'",
-]
-
-image = [
-    "torch==2.4.0+cu124 ; platform_system == 'Windows'",
-    "torch==2.4.0 ; platform_system != 'Windows'",
-    "torchvision==0.19.0+cu124 ; platform_system == 'Windows'",
-    "torchvision==0.19.0 ; platform_system != 'Windows'",
-]
-
-text = [
-    "torch==2.4.0+cu124 ; platform_system == 'Windows'",
-    "torch==2.4.0 ; platform_system != 'Windows'",
-    "transformers[torch]",
-    "sentence-transformers",
-    "langchain",
-    "langchain-text-splitters",
-]
-
-security = [
-    "tiktoken==0.7.0",
-    "openai==1.51.2",
-    "litellm==1.42.1",
-    "langchain_openai==0.1.17",
-    "langchain_google_genai==1.0.8",
-    "google-generativeai==0.7.2",
-    "anthropic==0.31.2",
-    "langchain_anthropic==0.1.20",
-    "langchain_huggingface==0.0.3",
+    "SQLAlchemy",
+    "pymssql",
+    "pyodbc",
+    "python-dotenv>=1.0.1",
+    "langchain>=0.3.10",
+    "langchain-community>=0.3.10",
+    "langchain-experimental>=0.3.3",
+    "langchain_google_community>=2.0.3",
+    "langchain-openai>=0.2.11",
+    "langgraph>=0.2.56",
+    "streamlit>=1.37.1",
+    "python-magic>=0.4.27",
+    "unstructured>=0.14.8",
+    "sqlparse>=0.5.2",
+    "langfuse>=2.56.0",
 ]
 
 [dependency-groups]
@@ -90,16 +62,16 @@ security = [
 build = ["twine", "build"]
 
 dev = [
-    "mypy",
-    "jupyter",
-    "ipykernel",
-    "pytest",
-    "pytest-cov",
-    "pytest-mock",
-    "pytest-asyncio",
+    "mypy>=1.13.0",
+    "jupyter>=1.1.1",
+    "ipykernel>=6.29.5",
+    "pytest>=8.3.4",
+    "pytest-cov>=6.0.0",
+    "pytest-mock>=3.14.0",
+    "pytest-asyncio>=0.24.0",
     "pytest-xdist[psutil]",
-    "ruff",
-    "types-requests",
+    "ruff>=0.8.2",
+    "types-requests>=2.32.0.20241016",
 ]
 
 ### INDEXES

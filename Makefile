@@ -7,7 +7,7 @@ else
    export VENV_BIN=.venv/bin
 endif
 
-export SRC_DIR=project_template
+export SRC_DIR=llm_agents
 export PYTHONPATH='$(shell pwd)'
 ifndef BRANCH_NAME
 	export BRANCH_NAME=$(shell git rev-parse --abbrev-ref HEAD)
@@ -30,7 +30,7 @@ USE_DEPLOY_ENVIRONMENT=n
 # The project is relocked before syncing.
 # This installs all extras and the development group (excluding the build group)
 dev-sync:
-	uv sync --cache-dir .uv_cache --all-extras
+	uv sync --cache-dir .uv_cache --all-extras --no-group build
 
 # As above but upgrades all packages
 dev-sync-upgrade:
