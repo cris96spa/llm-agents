@@ -1,40 +1,80 @@
-# Aperitech - LLM Agents: LangChain and LangGraph
+1. What is LangChain
+2. What is LangGraph
+   1. Nodes
+   2. Edges
+   3. State
+   4. Steps and Super steps
+3. Agents
 
-## Overview
+   1. What is an agent: an agent is a system that uses an LLM to decide the control flow
+   2. Types of agents
+      ![Agent Types](https://langchain-ai.github.io/langgraph/concepts/img/agent_types.png)
+   3. Structured Output
+      ![Tools](https://langchain-ai.github.io/langgraph/concepts/img/tool_call.png)
 
-This repository explores the use of **LangChain** and **LangGraph** for building applications powered by large language models (LLMs). It provides an interactive notebook and code examples to demonstrate how these frameworks can be used to create modular and efficient workflows for LLM-powered applications.
+   4. Agents Architectxures
+      ![](https://langchain-ai.github.io/langgraph/concepts/img/multi_agent/architectures.png)
 
-## What is LangChain?
+4. Memory/Persistence
+   - Checkpoints: at each super step it is saved a snapshot of the graph state and represented as StateSnapshot
+     ![Replay](https://langchain-ai.github.io/langgraph/concepts/img/persistence/re_play.jpg)
+   - Memory Store
+     ![Update](https://langchain-ai.github.io/langgraph/concepts/img/persistence/shared_state.png)
+   -
+5. Human in the loop
+   1. Interaction Patterns:
+      - approval,
+        ![](https://langchain-ai.github.io/langgraph/concepts/img/human_in_the_loop/approval.png)
+      - editing
+        ![](https://langchain-ai.github.io/langgraph/concepts/img/human_in_the_loop/edit_graph_state.png)
+      - input
+        ![](https://langchain-ai.github.io/langgraph/concepts/img/human_in_the_loop/wait_for_input.png)
+   1. reviewing tool calls, time travel
+   1. How?
+      - Breakpoints
+        ```python
+        # Compile our graph with a checkpoitner and a breakpoint before "step_for_human_in_the_loop"
+        graph = builder.compile(checkpointer=checkpoitner, interrupt_before=["step_for_human_in_the_loop"])
 
-[LangChain](https://python.langchain.com) is a framework for developing applications powered by large language models. It allows developers to construct workflows as chains of modular operations that execute in sequence or parallel.
+        # Run the graph up to the breakpoint
+        thread_config = {"configurable": {"thread_id": "1"}}
+        for event in graph.stream(inputs, thread_config, stream_mode="values"):
+        		    print(event)
 
-Key features of LangChain:
+        # Perform some action that requires human in the loop
 
-- **Prompt Engineering**: Simplifies crafting and managing prompts for LLMs.
-- **Information Retrieval**: Integrates with various retrieval systems.
-- **LLM Interaction**: Supports chatbot-like interactions.
-- **Output Structuring**: Parses and formats LLM output.
-- **Persistence**: Manages and stores interaction histories.
-- **Tool Management**: Orchestrates external tools for LLMs.
+        # Continue the graph execution from the current checkpoint
+        for event in graph.stream(None, thread_config, stream_mode="values"):
+        	print(event)
+        ```
+      - Dynamic BreakPoints this can be managed using NodeInterrupt expeptions
+        ```python
+        def my_node(state: State) -> State:
+            if len(state['input']) > 5:
+                raise NodeInterrupt(f"Received input that is longer than 5 characters: {state['input']}")
+            return state
 
-![LangChain Stack](https://python.langchain.com/svg/langchain_stack_112024_dark.svg)
+        # Attempt to continue the graph execution with no change to state after we hit the dynamic breakpoint
+        for event in graph.stream(None, thread_config, stream_mode="values"):
+            print(event)
 
-## What is LangGraph?
-
-[LangGraph](https://github.com/langgraph/langgraph) builds upon LangChain to provide graph-based orchestration of LLM-powered workflows. By modeling workflows as directed acyclic graphs (DAGs), LangGraph enhances the modularity and flexibility of LangChain applications.
-
-## Prerequisites
-
-To run the code in this repository, ensure you have the following installed:
-
-- Python 3.12+
-- uv 0.5.0+ [https://docs.astral.sh/uv/getting-started/installation/](https://docs.astral.sh/uv/getting-started/installation/)
-- make [Optional for easy setup] [make for windows](https://stackoverflow.com/questions/32127524/how-to-install-and-use-make-in-windows)
-
-### Key Libraries
-
-- **LangChain**: Workflow management for LLMs.
-- **LangGraph**: Graph-based workflow orchestration.
+        # In this case, before restarting the execution, we need to update the state, otherwise the conditional interruption
+        # would be triggered again
+        # Update the state to pass the dynamic breakpoint
+        graph.update_state(config=thread_config, values={"input": "foo"})
+        for event in graph.stream(None, thread_config, stream_mode="values"):
+            print(event)
+        ```
+        Alternatively, if we want to skip the check but keeping the same input, we can proceed as follows:
+        ```python
+        # This update will skip the node `my_node` altogether
+        graph.update_state(config=thread_config, values=None, as_node="my_node")
+        for event in graph.stream(None, thread_config, stream_mode="values"):
+            print(event)
+        ```
+        Here the idea is to update the state simulating the pass through the node defined by the `as_node` param, whose return value is defined by `values`. This is useful also if we are waiting for a specific human input
+6. How to debug?
+7. LangSmith/LangFuse
 
 ## Getting Started
 
