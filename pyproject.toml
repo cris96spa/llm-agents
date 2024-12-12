@@ -72,6 +72,11 @@ dev = [
     "pytest-xdist[psutil]",
     "ruff>=0.8.2",
     "types-requests>=2.32.0.20241016",
+    "transformers",
+    "huggingface_hub[cli]",
+    "torch",
+    "torchvision",
+    "torchaudio"
 ]
 
 ### INDEXES
