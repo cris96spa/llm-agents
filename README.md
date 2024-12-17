@@ -1,82 +1,128 @@
-1. What is LangChain
-2. What is LangGraph
-   1. Nodes
-   2. Edges
-   3. State
-   4. Steps and Super steps
-3. Agents
+# Large Language Model Agents Aperitech
 
-   1. What is an agent: an agent is a system that uses an LLM to decide the control flow
-   2. Types of agents
-      ![Agent Types](https://langchain-ai.github.io/langgraph/concepts/img/agent_types.png)
-   3. Structured Output
-      ![Tools](https://langchain-ai.github.io/langgraph/concepts/img/tool_call.png)
+## 1. What is LangChain?
 
-   4. Agents Architectxures
-      ![](https://langchain-ai.github.io/langgraph/concepts/img/multi_agent/architectures.png)
+LangChain provides tools and abstractions to simplify the development of applications powered by Large Language Models (LLMs).
 
-4. Memory/Persistence
-   - Checkpoints: at each super step it is saved a snapshot of the graph state and represented as StateSnapshot
-     ![Replay](https://langchain-ai.github.io/langgraph/concepts/img/persistence/re_play.jpg)
-   - Memory Store
-     ![Update](https://langchain-ai.github.io/langgraph/concepts/img/persistence/shared_state.png)
-   -
-5. Human in the loop
-   1. Interaction Patterns:
-      - approval,
-        ![](https://langchain-ai.github.io/langgraph/concepts/img/human_in_the_loop/approval.png)
-      - editing
-        ![](https://langchain-ai.github.io/langgraph/concepts/img/human_in_the_loop/edit_graph_state.png)
-      - input
-        ![](https://langchain-ai.github.io/langgraph/concepts/img/human_in_the_loop/wait_for_input.png)
-   1. reviewing tool calls, time travel
-   1. How?
-      - Breakpoints
-        ```python
-        # Compile our graph with a checkpoitner and a breakpoint before "step_for_human_in_the_loop"
-        graph = builder.compile(checkpointer=checkpoitner, interrupt_before=["step_for_human_in_the_loop"])
+![alt text](https://python.langchain.com/svg/langchain_stack_112024_dark.svg)
 
-        # Run the graph up to the breakpoint
-        thread_config = {"configurable": {"thread_id": "1"}}
-        for event in graph.stream(inputs, thread_config, stream_mode="values"):
-        		    print(event)
+## 2. What is LangGraph?
 
-        # Perform some action that requires human in the loop
+LangGraph introduces graph-based computation, enabling flexible and structured control flow for agents. Key concepts are:
 
-        # Continue the graph execution from the current checkpoint
-        for event in graph.stream(None, thread_config, stream_mode="values"):
-        	print(event)
-        ```
-      - Dynamic BreakPoints this can be managed using NodeInterrupt expeptions
-        ```python
-        def my_node(state: State) -> State:
-            if len(state['input']) > 5:
-                raise NodeInterrupt(f"Received input that is longer than 5 characters: {state['input']}")
-            return state
+- **Nodes**: define specific computational unit or function within the graph.
 
-        # Attempt to continue the graph execution with no change to state after we hit the dynamic breakpoint
-        for event in graph.stream(None, thread_config, stream_mode="values"):
-            print(event)
+- **Edges**: determine the execution flow between nodes.
 
-        # In this case, before restarting the execution, we need to update the state, otherwise the conditional interruption
-        # would be triggered again
-        # Update the state to pass the dynamic breakpoint
-        graph.update_state(config=thread_config, values={"input": "foo"})
-        for event in graph.stream(None, thread_config, stream_mode="values"):
-            print(event)
-        ```
-        Alternatively, if we want to skip the check but keeping the same input, we can proceed as follows:
-        ```python
-        # This update will skip the node `my_node` altogether
-        graph.update_state(config=thread_config, values=None, as_node="my_node")
-        for event in graph.stream(None, thread_config, stream_mode="values"):
-            print(event)
-        ```
-        Here the idea is to update the state simulating the pass through the node defined by the `as_node` param, whose return value is defined by `values`. This is useful also if we are waiting for a specific human input
-6. How to debug?
-7. LangSmith/LangFuse
+- **State**: captures the intermediate and final results within the graph's execution.
+
+- **Steps** and Super steps: represent individual and grouped execution cycles, respectively.
+
+---
+
+## 2. Agents
+
+### What is an agent?
+
+An **Agent** uses an LLM to dynamically decide its next actions and control flow based on inputs.
+
+### Types of agents
+
+![Agent Types](https://langchain-ai.github.io/langgraph/concepts/img/agent_types.png)
+
+### Structured Output
+
+Agents can call tools and produce structured output:
+
+![Tools](https://langchain-ai.github.io/langgraph/concepts/img/tool_call.png)
+
+```python
+ from langchain.agents import Tool
+ from langchain.chat_models import ChatOpenAI
+
+ def search_tool(query: str) -> str:
+     return f"Results for {query}"
+
+ llm = ChatOpenAI()
+ tools = [Tool(name="Search", func=search_tool, description="Searches the web")]
+
+ agent = create_react_agent(llm=llm, tools=tools)
+```
+
+### Architectures
+
+![](https://langchain-ai.github.io/langgraph/concepts/img/multi_agent/architectures.png)
+
+---
+
+## 3. Memory and Persistence
+
+### Checkpoints
+
+Save snapshots of graph states at specific steps:
+
+![Replay](https://langchain-ai.github.io/langgraph/concepts/img/persistence/re_play.jpg)
+
+```python
+builder.compile(checkpointer=checkpointer)
+```
+
+### Memory Store
+
+Shared states enable persistent graph operations across runs.
+
+![Update](https://langchain-ai.github.io/langgraph/concepts/img/persistence/shared_state.png)
+
+## 4. Human in the Loop
+
+### Interaction Patterns
+
+- **Approval**: Pause for approval before proceeding.
+
+  ![](https://langchain-ai.github.io/langgraph/concepts/img/human_in_the_loop/approval.png)
+
+- **Editing**: Allow manual changes to graph states.
+
+  ![](https://langchain-ai.github.io/langgraph/concepts/img/human_in_the_loop/edit_graph_state.png)
+
+- **Input**: Wait for explicit user input during execution.
+
+  ![](https://langchain-ai.github.io/langgraph/concepts/img/human_in_the_loop/wait_for_input.png)
+
+### Breakpoints
+
+Breakpoints enable stopping and resuming execution with human intervention.
+
+```python
+# Define Breakpoint and State Interrupts
+from langgraph.checkpoints import NodeInterrupt
+
+def my_node(state: State) -> State:
+    if len(state['input']) > 5:
+        raise NodeInterrupt("Input too long")
+    return state
+
+# Update state to bypass interruption
+builder.compile().update_state(config=config, values={"input": "short input"})
+```
+
+---
+
+## 5. Debugging
+
+Debugging graphs involves tracing execution and inspecting state transitions.
+
+---
+
+### LangSmith/LangFuse
+
+Integrate tools like **LangSmith** and **LangFuse** for monitoring and logging graph-based LLM applications.
+
+---
 
 ## Getting Started
+
+Clone the repository and set up the environment:
 
 ```bash
   git clone https://github.com/cris96spa/llm_agents.git
